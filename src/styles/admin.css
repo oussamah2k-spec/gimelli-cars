@@ -1,0 +1,133 @@
+/* admin.css */
+
+body {
+  font-family: 'Arial', sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f4f4f4;
+}
+
+.admin-dashboard {
+  padding: 20px;
+}
+
+.orders-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.orders-table th, .orders-table td {
+  padding: 12px;
+  text-align: left;
+  border: 1px solid #ddd;
+}
+
+.orders-table th {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.actions button {
+  border: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+  color: #fff;
+}
+
+.actions .confirm {
+  background: #16a34a;
+}
+
+.actions .confirm:hover {
+  background: #15803d;
+}
+
+.actions .cancel {
+  background: #6b7280;
+}
+
+.actions .cancel:hover {
+  background: #4b5563;
+}
+
+.actions .delete {
+  background: #ff2c2c;
+}
+
+.actions .delete:hover {
+  background: #cc0000;
+  transform: scale(1.05);
+}
+
+.actions button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.order-card {
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 15px;
+  margin: 10px 0;
+}
+
+.order-status {
+  padding: 5px 10px;
+  border-radius: 3px;
+  color: white;
+}
+
+.status-pending {
+  background-color: orange;
+}
+
+.status-confirmed {
+  background-color: green;
+}
+
+.status-cancelled {
+  background-color: red;
+}
+
+@media (max-width: 768px) {
+  .orders-table {
+    display: none;
+  }
+
+  .order-card {
+    display: block;
+  }
+}
+
+@media (min-width: 769px) {
+  .order-card {
+    display: none;
+  }
+
+  .orders-table {
+    display: table;
+  }
+}
+
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.no-orders {
+  text-align: center;
+  font-size: 18px;
+  color: #666;
+}

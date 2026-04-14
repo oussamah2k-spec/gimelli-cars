@@ -1,0 +1,24 @@
+{
+  "name": "client2-site",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "react-scripts start",
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "serve": "react-scripts start",
+    "test": "react-scripts test"
+  },
+  "dependencies": {
+    "react-scripts": "5.0.1",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "react-router-dom": "^6.0.0",
+    "firebase": "^9.0.0"
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not op_mini all"
+  ]
+}
