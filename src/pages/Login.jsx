@@ -20,8 +20,8 @@ const Login = () => {
 
     try {
       const credential = await signInWithEmailAndPassword(auth, email, password);
-      const adminStatus = await checkIsAdmin(credential.user.uid);
-      navigate(adminStatus ? "/admin" : "/");
+      const adminStatus = await checkIsAdmin(credential.user.uid, credential.user.email);
+      navigate(adminStatus ? '/admin' : '/');
     } catch (err) {
       setError("Failed to log in. Please check your credentials.");
     } finally {

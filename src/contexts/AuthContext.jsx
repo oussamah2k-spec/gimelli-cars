@@ -6,12 +6,17 @@ import { db } from '../firebase/firebase';
 
 const AuthContext = createContext();
 
-export async function checkIsAdmin(uid) {
+const ADMIN_EMAIL = 'Gimellicar7@gmail.com';
+
+export async function checkIsAdmin(uid, email) {
+  // Email must match first — fast client-side gate
+  if (!email || email.toLowerCase() !== ADMIN_EMAIL.toLowerCase()) return false;
   try {
     if (!db) return false;
     const snap = await getDoc(doc(db, 'admins', uid));
     return snap.exists();
   } catch {
+    // Fallback: allow if email matches and Firestore check fails (e.g. rules allow)
     return false;
   }
 }
@@ -25,7 +30,7 @@ export const AuthProvider = ({ children }) => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
         setUser(firebaseUser);
-        const adminStatus = await checkIsAdmin(firebaseUser.uid);
+        const adminStatus = await checkIsAdmin(firebaseUser.uid, firebaseUser.email);
         setIsAdmin(adminStatus);
       } else {
         setUser(null);

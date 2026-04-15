@@ -67,6 +67,15 @@ function Navbar() {
         <NavbarBrand />
 
         <nav className="main-nav" aria-label="Primary">
+          {isAdmin ? (
+            <button
+              type="button"
+              className="main-nav__link rounded-full bg-yellow-500 px-4 py-1 text-black transition hover:bg-yellow-400"
+              onClick={() => navigate('/admin')}
+            >
+              Admin
+            </button>
+          ) : null}
           <button
             type="button"
             className="main-nav__link text-gray-300 hover:text-yellow-400 transition duration-300"
@@ -81,15 +90,6 @@ function Navbar() {
           >
             Cars
           </button>
-          {isAdmin ? (
-            <button
-              type="button"
-              className="main-nav__link ml-3 rounded-full bg-yellow-500 px-4 py-1 text-black transition hover:bg-yellow-400"
-              onClick={() => navigate('/admin')}
-            >
-              Admin
-            </button>
-          ) : null}
           <button
             type="button"
             className="main-nav__link text-gray-300 hover:text-yellow-400 transition duration-300"
