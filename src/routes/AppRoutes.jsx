@@ -1,7 +1,6 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import { AuthProvider } from "../contexts/AuthContext";
-import { CartProvider } from "../contexts/CartContext";
-import Store from "../pages/Store";
+import { Routes, Route, Navigate } from "react-router-dom";
+import Home from "../pages/Home";
+import Products from "../pages/Products";
 import ProductDetails from "../pages/ProductDetails";
 import CartPage from "../pages/CartPage";
 import Checkout from "../pages/Checkout";
@@ -13,7 +12,8 @@ import ProtectedRoute from "../components/ProtectedRoute";
 function AppRoutes() {
   return (
     <Routes>
-      <Route path="/" element={<Store />} />
+      <Route path="/" element={<Home />} />
+      <Route path="/products" element={<Products />} />
       <Route path="/product/:ownerId/:productId" element={<ProductDetails />} />
       <Route path="/product/:id" element={<ProductDetails />} />
       <Route path="/cart" element={<CartPage />} />
@@ -41,16 +41,4 @@ function AppRoutes() {
   );
 }
 
-function App() {
-  return (
-    <AuthProvider>
-      <CartProvider>
-        <Router>
-          <AppRoutes />
-        </Router>
-      </CartProvider>
-    </AuthProvider>
-  );
-}
-
-export default App;
+export default AppRoutes;

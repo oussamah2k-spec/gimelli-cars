@@ -3,6 +3,7 @@ import {
   collection,
   deleteDoc,
   doc,
+  getDocs,
   getFirestore,
   onSnapshot,
   orderBy,
@@ -29,6 +30,15 @@ export async function updateOrderStatus(orderId, status) {
 
 export async function deleteOrderById(orderId) {
   return deleteDoc(doc(db, 'orders', orderId));
+}
+
+export async function getOrders() {
+  const snapshot = await getDocs(query(ordersCollection, orderBy('createdAt', 'desc')));
+
+  return snapshot.docs.map((orderDoc) => ({
+    id: orderDoc.id,
+    ...orderDoc.data(),
+  }));
 }
 
 export function subscribeToOrders(callback, onError) {
