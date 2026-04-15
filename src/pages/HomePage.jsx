@@ -39,11 +39,8 @@ function HomePage() {
               Explore curated listings, detailed specifications, and a responsive buying experience built for modern dealerships.
             </p>
             <div className="hero__actions">
-              <Link className="button button--primary" to="/products">
+              <Link className="button button--primary" to="/cars">
                 Browse Cars
-              </Link>
-              <Link className="button button--secondary" to="/admin">
-                Add Inventory
               </Link>
             </div>
           </div>
@@ -71,7 +68,7 @@ function HomePage() {
             <p className="section__eyebrow">Latest cars</p>
             <h2>Recently added inventory</h2>
           </div>
-          <Link className="text-link" to="/products">
+          <Link className="text-link" to="/cars">
             View all cars
           </Link>
         </div>

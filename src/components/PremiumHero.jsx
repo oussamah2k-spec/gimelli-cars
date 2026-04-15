@@ -62,12 +62,6 @@ function PremiumHero({ carsCount = 0 }) {
             >
               Browse Cars
             </Link>
-            <Link
-              className="rounded-full border border-white/12 bg-white/[0.02] px-6 py-3 text-sm font-semibold text-white transition-all duration-300 hover:border-[#D4AF37]/24 hover:bg-white/[0.05]"
-              to="/admin"
-            >
-              View Garage
-            </Link>
           </motion.div>
 
           <motion.div

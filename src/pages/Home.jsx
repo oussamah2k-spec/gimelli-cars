@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useCallback, useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { collection, getDocs } from 'firebase/firestore';
 import CarBrandsSlider from '../components/CarBrandsSlider';
 import Features from '../components/Features';
@@ -9,9 +9,14 @@ import PremiumHero from '../components/PremiumHero';
 import { db } from '../firebase/firebase';
 
 function Home() {
+  const navigate = useNavigate();
   const [cars, setCars] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const handleBookNow = useCallback(() => {
+    navigate('/cars');
+  }, [navigate]);
 
   useEffect(() => {
     async function fetchCars() {
@@ -66,7 +71,7 @@ function Home() {
           {!loading && !error && cars.length > 0 ? (
             <div className="products-grid">
               {cars.map((car) => (
-                <ProductCard key={car.id} product={car} />
+                <ProductCard key={car.id} product={car} onBookNowClick={handleBookNow} />
               ))}
             </div>
           ) : null}

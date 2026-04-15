@@ -55,9 +55,6 @@ function Navbar() {
           <NavLink className="main-nav__link" to="/cars">
             Cars
           </NavLink>
-          <NavLink className="main-nav__link" to="/admin">
-            Admin
-          </NavLink>
         </nav>
       </div>
 

@@ -5,7 +5,7 @@ function formatPrice(price) {
   return new Intl.NumberFormat('fr-MA').format(Number(price || 0));
 }
 
-function ProductCard({ product }) {
+function ProductCard({ product, onBookNowClick }) {
   const vehicleType = useMemo(
     () => (product.type && product.type !== 'All' ? product.type : 'Performance Line'),
     [product.type]
@@ -34,9 +34,22 @@ function ProductCard({ product }) {
             <span className="car-card__price-label">Price Per Day</span>
             <p>{formatPrice(product.price)} DH</p>
           </div>
-          <Link className="card-link card-link--accent" to={`/product/${product.id}`}>
-            Book Now
-          </Link>
+          {onBookNowClick ? (
+            <button
+              type="button"
+              onClick={() => onBookNowClick(product)}
+              className="card-link card-link--accent transition-all duration-300 ease-in-out"
+            >
+              Book Now
+            </button>
+          ) : (
+            <Link
+              className="card-link card-link--accent transition-all duration-300 ease-in-out"
+              to={`/product/${product.id}`}
+            >
+              Book Now
+            </Link>
+          )}
         </div>
       </div>
     </article>
