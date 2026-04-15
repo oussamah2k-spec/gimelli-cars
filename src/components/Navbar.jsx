@@ -1,6 +1,6 @@
 import { memo } from 'react';
 import { motion } from "framer-motion";
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import logo from '../assets/logo.svg';
 
 const brandMotionProps = {
@@ -43,18 +43,63 @@ function NavbarBrand() {
 }
 
 function Navbar() {
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const scrollToSection = (id) => {
+    const element = document.getElementById(id);
+
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      return;
+    }
+
+    if (location.pathname !== '/') {
+      navigate('/', { state: { scrollTo: id } });
+    }
+  };
+
   return (
     <header className="site-header bg-[#0B0B0B]">
       <div className="container site-header__inner">
         <NavbarBrand />
 
         <nav className="main-nav" aria-label="Primary">
-          <NavLink className="main-nav__link" to="/">
+          <button
+            type="button"
+            className="main-nav__link text-gray-300 hover:text-yellow-400 transition duration-300"
+            onClick={() => scrollToSection('home')}
+          >
             Home
-          </NavLink>
-          <NavLink className="main-nav__link" to="/cars">
+          </button>
+          <button
+            type="button"
+            className="main-nav__link text-gray-300 hover:text-yellow-400 transition duration-300"
+            onClick={() => navigate('/cars')}
+          >
             Cars
-          </NavLink>
+          </button>
+          <button
+            type="button"
+            className="main-nav__link text-gray-300 hover:text-yellow-400 transition duration-300"
+            onClick={() => scrollToSection('why-us')}
+          >
+            Why Us
+          </button>
+          <button
+            type="button"
+            className="main-nav__link text-gray-300 hover:text-yellow-400 transition duration-300"
+            onClick={() => scrollToSection('contact')}
+          >
+            Contact
+          </button>
+          <button
+            type="button"
+            className="main-nav__link text-gray-300 hover:text-yellow-400 transition duration-300"
+            onClick={() => scrollToSection('footer')}
+          >
+            Follow Us
+          </button>
         </nav>
       </div>
 

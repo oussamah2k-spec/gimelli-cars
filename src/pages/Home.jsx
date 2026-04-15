@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { collection, getDocs } from 'firebase/firestore';
 import CarBrandsSlider from '../components/CarBrandsSlider';
 import Features from '../components/Features';
@@ -9,6 +9,7 @@ import PremiumHero from '../components/PremiumHero';
 import { db } from '../firebase/firebase';
 
 function Home() {
+  const location = useLocation();
   const navigate = useNavigate();
   const [cars, setCars] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -49,9 +50,31 @@ function Home() {
     fetchCars();
   }, []);
 
+  useEffect(() => {
+    const sectionId = location.state?.scrollTo;
+
+    if (!sectionId) {
+      return;
+    }
+
+    const frame = window.requestAnimationFrame(() => {
+      const section = document.getElementById(sectionId);
+      if (section) {
+        section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+      navigate('.', { replace: true, state: null });
+    });
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+    };
+  }, [location.state, navigate]);
+
   return (
     <div className="page-shell home-page-shell">
-      <PremiumHero carsCount={cars.length} />
+      <section id="home" className="home-page-section">
+        <PremiumHero carsCount={cars.length} />
+      </section>
 
       <section className="list-section fade-in-section home-page-section">
         <div className="container section-header">

@@ -76,6 +76,7 @@ const itemVariants = {
 function Features() {
   return (
     <motion.section
+      id="why-us"
       variants={sectionVariants}
       initial="hidden"
       whileInView="visible"

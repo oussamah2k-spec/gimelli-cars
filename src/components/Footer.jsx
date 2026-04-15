@@ -4,7 +4,7 @@ import SocialIcons from './SocialIcons';
 
 function Footer() {
   return (
-    <footer className="site-footer">
+    <footer id="footer" className="site-footer">
       <ContactSection />
       <div className="container site-footer__inner">
         <div className="site-footer__brand-block">
