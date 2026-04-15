@@ -1,25 +1,35 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { auth } from '../firebase/auth'; // Adjust the import based on your Firebase setup
+import { auth } from '../firebase/auth';
 import { onAuthStateChanged } from 'firebase/auth';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '../firebase/firebase';
 
 const AuthContext = createContext();
+
+export async function checkIsAdmin(uid) {
+  try {
+    if (!db) return false;
+    const snap = await getDoc(doc(db, 'admins', uid));
+    return snap.exists();
+  } catch {
+    return false;
+  }
+}
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isAuthorizedAdmin, setIsAuthorizedAdmin] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setUser(user);
-        setIsAuthenticated(true);
-        setIsAuthorizedAdmin(true);
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      if (firebaseUser) {
+        setUser(firebaseUser);
+        const adminStatus = await checkIsAdmin(firebaseUser.uid);
+        setIsAdmin(adminStatus);
       } else {
         setUser(null);
-        setIsAuthenticated(false);
-        setIsAuthorizedAdmin(false);
+        setIsAdmin(false);
       }
       setLoading(false);
     });
@@ -28,7 +38,16 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ currentUser: user, user, loading, isAuthenticated, isAuthorizedAdmin }}>
+    <AuthContext.Provider
+      value={{
+        currentUser: user,
+        user,
+        loading,
+        isAdmin,
+        isAuthenticated: Boolean(user),
+        isAuthorizedAdmin: isAdmin,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

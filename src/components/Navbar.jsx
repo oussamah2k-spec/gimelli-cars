@@ -46,7 +46,7 @@ function NavbarBrand() {
 function Navbar() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { currentUser } = useAuth();
+  const { isAdmin } = useAuth();
 
   const scrollToSection = (id) => {
     const element = document.getElementById(id);
@@ -81,7 +81,7 @@ function Navbar() {
           >
             Cars
           </button>
-          {currentUser ? (
+          {isAdmin ? (
             <button
               type="button"
               className="main-nav__link ml-3 rounded-full bg-yellow-500 px-4 py-1 text-black transition hover:bg-yellow-400"

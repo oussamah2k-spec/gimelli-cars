@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth, checkIsAdmin } from "../contexts/AuthContext";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase/auth";
 import { Navigate, useNavigate } from "react-router-dom";
 import AppScreenLoader from "../components/AppScreenLoader";
 
 const Login = () => {
-  const { currentUser } = useAuth();
+  const { currentUser, isAdmin, loading: authLoading } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -19,8 +19,9 @@ const Login = () => {
     setError("");
 
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-      navigate("/admin");
+      const credential = await signInWithEmailAndPassword(auth, email, password);
+      const adminStatus = await checkIsAdmin(credential.user.uid);
+      navigate(adminStatus ? "/admin" : "/");
     } catch (err) {
       setError("Failed to log in. Please check your credentials.");
     } finally {
@@ -28,12 +29,12 @@ const Login = () => {
     }
   };
 
-  if (loading) {
+  if (authLoading || loading) {
     return <AppScreenLoader />;
   }
 
   if (currentUser) {
-    return <Navigate to="/admin" replace />;
+    return <Navigate to={isAdmin ? "/admin" : "/"} replace />;
   }
 
   return (
