@@ -6,7 +6,6 @@ import CartPage from "../pages/CartPage";
 import Checkout from "../pages/Checkout";
 import Login from "../pages/Login";
 import Admin from "../admin/AdminDashboard";
-import AdminOrders from "../admin/AdminOrders";
 import ProtectedRoute from "../components/ProtectedRoute";
 
 function AppRoutes() {
@@ -24,14 +23,6 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <Admin />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/admin/orders"
-        element={
-          <ProtectedRoute>
-            <AdminOrders />
           </ProtectedRoute>
         }
       />

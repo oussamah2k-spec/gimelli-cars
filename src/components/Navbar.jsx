@@ -2,6 +2,7 @@ import { memo } from 'react';
 import { motion } from "framer-motion";
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import logo from '../assets/logo.svg';
+import { useAuth } from '../contexts/AuthContext';
 
 const brandMotionProps = {
   initial: { opacity: 0, y: 14, scale: 0.9 },
@@ -45,6 +46,7 @@ function NavbarBrand() {
 function Navbar() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { currentUser } = useAuth();
 
   const scrollToSection = (id) => {
     const element = document.getElementById(id);
@@ -79,6 +81,15 @@ function Navbar() {
           >
             Cars
           </button>
+          {currentUser ? (
+            <button
+              type="button"
+              className="main-nav__link ml-3 rounded-full bg-yellow-500 px-4 py-1 text-black transition hover:bg-yellow-400"
+              onClick={() => navigate('/admin')}
+            >
+              Admin
+            </button>
+          ) : null}
           <button
             type="button"
             className="main-nav__link text-gray-300 hover:text-yellow-400 transition duration-300"

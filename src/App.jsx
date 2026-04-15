@@ -4,7 +4,6 @@ import { CartProvider } from "./contexts/CartContext";
 import ProtectedRoute from './components/ProtectedRoute';
 import ScrollToTop from './components/ScrollToTop';
 import AdminDashboard from './admin/AdminDashboard';
-import AdminOrders from './admin/AdminOrders';
 import MainLayout from './layouts/MainLayout';
 import AdminLayout from './layouts/AdminLayout';
 import Home from './pages/Home';
@@ -43,7 +42,6 @@ function App() {
             >
               <Route index element={<AdminDashboard />} />
               <Route path="cars" element={<AdminDashboard />} />
-              <Route path="orders" element={<AdminOrders />} />
             </Route>
 
             <Route path="/shop" element={<Navigate to="/" replace />} />

@@ -20,7 +20,7 @@ const Login = () => {
 
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      navigate("/");
+      navigate("/admin");
     } catch (err) {
       setError("Failed to log in. Please check your credentials.");
     } finally {
@@ -33,7 +33,7 @@ const Login = () => {
   }
 
   if (currentUser) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/admin" replace />;
   }
 
   return (

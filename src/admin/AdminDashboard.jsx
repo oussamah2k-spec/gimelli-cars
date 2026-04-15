@@ -1,22 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import {
   BarChart3,
   CarFront,
-  CheckCircle2,
   LogOut,
   Plus,
   Settings,
   ShieldCheck,
-  XCircle,
 } from 'lucide-react';
 import { addCar, deleteCar, subscribeToCars, updateCar } from '../firebase/cars';
-import {
-  cancelBooking,
-  confirmBooking,
-  deleteBooking,
-  fetchBookings,
-} from '../firebase/bookingService';
 import AddCarModal from './components/AddCarModal';
 import CarTable from './components/CarTable';
 import { getCloudinaryConfigStatus, uploadImages } from '../firebase/uploadImage';
@@ -27,37 +19,8 @@ import '../styles/admin.css';
 const TAB_ITEMS = [
   { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
   { id: 'cars', label: 'Cars', icon: CarFront },
-  { id: 'bookings', label: 'Bookings', icon: CheckCircle2 },
   { id: 'settings', label: 'Settings', icon: Settings },
 ];
-
-function formatMoney(value) {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    maximumFractionDigits: 0,
-  }).format(Number(value || 0));
-}
-
-function formatDate(value) {
-  if (!value) {
-    return 'N/A';
-  }
-
-  const parsedDate = new Date(value);
-  return Number.isNaN(parsedDate.getTime()) ? 'N/A' : parsedDate.toLocaleString();
-}
-
-function getBookingStatusClass(status) {
-  switch ((status || '').toLowerCase()) {
-    case 'confirmed':
-      return 'is-confirmed';
-    case 'cancelled':
-      return 'is-cancelled';
-    default:
-      return 'is-pending';
-  }
-}
 
 function normalizeImageDescription(carName, description, index) {
   if (description?.trim()) {
@@ -69,12 +32,11 @@ function normalizeImageDescription(carName, description, index) {
 
 function AdminDashboard() {
   const { currentUser, isAuthorizedAdmin, loading } = useAuth();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('cars');
   const [cars, setCars] = useState([]);
-  const [bookings, setBookings] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSavingCar, setIsSavingCar] = useState(false);
-  const [isSavingBooking, setIsSavingBooking] = useState('');
   const [isCarModalOpen, setIsCarModalOpen] = useState(false);
   const [editingCar, setEditingCar] = useState(null);
   const [feedback, setFeedback] = useState({ type: '', message: '' });
@@ -105,22 +67,6 @@ function AdminDashboard() {
       }
     );
 
-    async function loadBookings() {
-      try {
-        const bookingsData = await fetchBookings();
-        if (isMounted) {
-          setBookings(bookingsData);
-        }
-      } catch (error) {
-        console.error('Failed to load bookings:', error);
-        if (isMounted) {
-          setFeedback({ type: 'error', message: 'Failed to load bookings from Firestore.' });
-        }
-      }
-    }
-
-    loadBookings();
-
     return () => {
       isMounted = false;
       unsubscribeCars();
@@ -134,8 +80,6 @@ function AdminDashboard() {
   const availableCarsCount = cars.filter((car) => (car.stock || '').toString().trim().toLowerCase() !== 'not available').length;
   const unavailableCarsCount = cars.length - availableCarsCount;
   const featuredCarsCount = cars.filter((car) => car.featured).length;
-  const totalBookingRevenue = bookings.reduce((sum, booking) => sum + Number(booking.total || 0), 0);
-  const recentBookings = bookings.slice(0, 5);
   const recentCars = cars.slice(0, 5);
   const cloudinaryStatus = getCloudinaryConfigStatus();
   const types = Array.from(
@@ -255,61 +199,13 @@ function AdminDashboard() {
     }
   };
 
-  const handleBookingAction = async (bookingId, action) => {
-    const actionMap = {
-      confirm: confirmBooking,
-      cancel: cancelBooking,
-      delete: deleteBooking,
-    };
-
-    const runner = actionMap[action];
-
-    if (!runner) {
-      return;
-    }
-
-    if (action === 'delete' && !window.confirm('Delete this booking permanently?')) {
-      return;
-    }
-
-    try {
-      setIsSavingBooking(`${action}-${bookingId}`);
-      await runner(bookingId);
-      setBookings((previousBookings) => {
-        if (action === 'delete') {
-          return previousBookings.filter((booking) => booking.id !== bookingId);
-        }
-
-        return previousBookings.map((booking) =>
-          booking.id === bookingId
-            ? { ...booking, status: action === 'confirm' ? 'confirmed' : 'cancelled' }
-            : booking
-        );
-      });
-      setFeedback({
-        type: 'success',
-        message:
-          action === 'confirm'
-            ? 'Booking confirmed successfully.'
-            : action === 'cancel'
-              ? 'Booking cancelled successfully.'
-              : 'Booking deleted successfully.',
-      });
-    } catch (error) {
-      console.error(`Failed to ${action} booking:`, error);
-      setFeedback({ type: 'error', message: `Unable to ${action} this booking.` });
-    } finally {
-      setIsSavingBooking('');
-    }
-  };
-
   return (
     <div className="admin-shell">
       <aside className="admin-sidebar">
         <div className="admin-brand">
           <span className="admin-brand__badge">Admin</span>
           <h1>Client2 Control</h1>
-          <p>Dark operations panel for cars, bookings, and store settings.</p>
+          <p>Dark operations panel for cars and store settings.</p>
         </div>
 
         <nav className="admin-tabs" aria-label="Admin sections">
@@ -342,6 +238,9 @@ function AdminDashboard() {
             <LogOut size={16} />
             <span>Back to Login</span>
           </a>
+          <button type="button" className="admin-secondary-action" onClick={() => navigate('/')}>
+            Back to Store
+          </button>
         </div>
       </aside>
 
@@ -394,39 +293,13 @@ function AdminDashboard() {
 
             <section className="admin-panel admin-panel--split">
               <div>
-                <p className="admin-panel__label">Revenue Snapshot</p>
-                <h3>{formatMoney(totalBookingRevenue)}</h3>
-                <p>Calculated from all bookings totals currently stored in Firestore.</p>
+                <p className="admin-panel__label">Inventory Snapshot</p>
+                <h3>{cars.length}</h3>
+                <p>Live vehicles currently stored in the Firestore cars collection.</p>
               </div>
               <div className="admin-mini-summary">
-                <span>Total Bookings</span>
-                <strong>{bookings.length}</strong>
-              </div>
-            </section>
-
-            <section className="admin-panel">
-              <div className="admin-section-header">
-                <div>
-                  <p className="admin-panel__label">Recent Bookings</p>
-                  <h3>Latest activity</h3>
-                </div>
-              </div>
-              <div className="admin-activity-list">
-                {recentBookings.length === 0 ? <p>No bookings available yet.</p> : null}
-                {recentBookings.map((booking) => (
-                  <div key={booking.id} className="admin-activity-item">
-                    <div>
-                      <strong>{booking.customerName}</strong>
-                      <span>{booking.carName}</span>
-                    </div>
-                    <div>
-                      <span className={`admin-status-chip ${getBookingStatusClass(booking.status)}`}>
-                        {booking.status}
-                      </span>
-                      <small>{formatDate(booking.createdAt)}</small>
-                    </div>
-                  </div>
-                ))}
+                <span>Available Cars</span>
+                <strong>{availableCarsCount}</strong>
               </div>
             </section>
 
@@ -499,81 +372,6 @@ function AdminDashboard() {
           </div>
         ) : null}
 
-        {!isLoading && activeTab === 'bookings' ? (
-          <section className="admin-panel">
-            <div className="admin-section-header">
-              <div>
-                <p className="admin-panel__label">Bookings Management</p>
-                <h3>All bookings</h3>
-              </div>
-            </div>
-            <div className="admin-table-wrap">
-              <table className="admin-table">
-                <thead>
-                  <tr>
-                    <th>Customer</th>
-                    <th>Car</th>
-                    <th>Total</th>
-                    <th>Status</th>
-                    <th>Date</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {bookings.map((booking) => (
-                    <tr key={booking.id}>
-                      <td>
-                        <div className="admin-booking-cell">
-                          <strong>{booking.customerName}</strong>
-                          <span>{booking.email || booking.phone || 'No contact info'}</span>
-                        </div>
-                      </td>
-                      <td>{booking.carName}</td>
-                      <td>{formatMoney(booking.total)}</td>
-                      <td>
-                        <span className={`admin-status-chip ${getBookingStatusClass(booking.status)}`}>
-                          {booking.status}
-                        </span>
-                      </td>
-                      <td>{formatDate(booking.createdAt)}</td>
-                      <td>
-                        <div className="admin-row-actions">
-                          <button
-                            type="button"
-                            disabled={isSavingBooking === `confirm-${booking.id}`}
-                            onClick={() => handleBookingAction(booking.id, 'confirm')}
-                          >
-                            <CheckCircle2 size={15} />
-                            <span>Confirm</span>
-                          </button>
-                          <button
-                            type="button"
-                            disabled={isSavingBooking === `cancel-${booking.id}`}
-                            onClick={() => handleBookingAction(booking.id, 'cancel')}
-                          >
-                            <XCircle size={15} />
-                            <span>Cancel</span>
-                          </button>
-                          <button
-                            type="button"
-                            className="is-danger"
-                            disabled={isSavingBooking === `delete-${booking.id}`}
-                            onClick={() => handleBookingAction(booking.id, 'delete')}
-                          >
-                            <Trash2 size={15} />
-                            <span>Delete</span>
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              {bookings.length === 0 ? <p className="admin-empty-state">No bookings found in Firestore yet.</p> : null}
-            </div>
-          </section>
-        ) : null}
-
         {!isLoading && activeTab === 'settings' ? (
           <div className="admin-grid admin-grid--settings">
             <section className="admin-panel">
@@ -593,10 +391,6 @@ function AdminDashboard() {
                   <strong>cars</strong>
                 </li>
                 <li>
-                  <span>Bookings Collection</span>
-                  <strong>orders</strong>
-                </li>
-                <li>
                   <span>Cloudinary</span>
                   <strong>{cloudinaryStatus.cloudName} / {cloudinaryStatus.folder}</strong>
                 </li>
@@ -607,7 +401,6 @@ function AdminDashboard() {
               <h3>How this panel is wired</h3>
               <div className="admin-settings-note">
                 <p>Cars management is backed by the Firestore cars collection through firebase/cars.</p>
-                <p>Bookings management is backed by the Firestore orders collection through firebase/bookingService.</p>
                 <p>Images are uploaded directly to Cloudinary with fetch, then stored in Firestore as image URLs.</p>
                 <p>Admin access uses AuthContext and redirects non-admin users back to /login.</p>
               </div>
