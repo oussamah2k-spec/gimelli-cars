@@ -11,19 +11,60 @@ import {
 } from 'firebase/firestore';
 
 const firebaseConfig = {
-  apiKey: process.env.REACT_APP_API_KEY,
-  authDomain: process.env.REACT_APP_AUTH_DOMAIN,
-  projectId: process.env.REACT_APP_PROJECT_ID,
-  storageBucket: process.env.REACT_APP_STORAGE_BUCKET,
-  messagingSenderId: process.env.REACT_APP_MESSAGING_SENDER_ID,
-  appId: process.env.REACT_APP_APP_ID,
+  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
+  authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.REACT_APP_FIREBASE_APP_ID,
 };
 
-console.log('Firebase config:', firebaseConfig);
+const requiredEnvMap = {
+  REACT_APP_FIREBASE_API_KEY: firebaseConfig.apiKey,
+  REACT_APP_FIREBASE_AUTH_DOMAIN: firebaseConfig.authDomain,
+  REACT_APP_FIREBASE_PROJECT_ID: firebaseConfig.projectId,
+  REACT_APP_FIREBASE_STORAGE_BUCKET: firebaseConfig.storageBucket,
+  REACT_APP_FIREBASE_MESSAGING_SENDER_ID: firebaseConfig.messagingSenderId,
+  REACT_APP_FIREBASE_APP_ID: firebaseConfig.appId,
+};
 
-const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const auth = getAuth(app);
+const missingFirebaseEnvVars = Object.entries(requiredEnvMap)
+  .filter(([, value]) => !value || !String(value).trim())
+  .map(([envKey]) => envKey);
+
+const firebaseEnvDebug = {
+  apiKeyLoaded: Boolean(firebaseConfig.apiKey),
+  authDomainLoaded: Boolean(firebaseConfig.authDomain),
+  projectIdLoaded: Boolean(firebaseConfig.projectId),
+  storageBucketLoaded: Boolean(firebaseConfig.storageBucket),
+  messagingSenderIdLoaded: Boolean(firebaseConfig.messagingSenderId),
+  appIdLoaded: Boolean(firebaseConfig.appId),
+  nodeEnv: process.env.NODE_ENV,
+};
+
+console.info('[Firebase] Environment check:', firebaseEnvDebug);
+
+if (missingFirebaseEnvVars.length > 0) {
+  console.error(
+    `[Firebase] Missing required environment variables: ${missingFirebaseEnvVars.join(', ')}.`
+  );
+}
+
+const canInitializeFirebase = missingFirebaseEnvVars.length === 0;
+
+const app = canInitializeFirebase
+  ? (getApps().length ? getApp() : initializeApp(firebaseConfig))
+  : null;
+const db = app ? getFirestore(app) : null;
+const auth = app ? getAuth(app) : null;
+
+function ensureFirestoreReady() {
+  if (!db) {
+    throw new Error(
+      '[Firebase] Firestore is not initialized. Check REACT_APP_FIREBASE_* variables in your Vercel project settings and redeploy.'
+    );
+  }
+}
 
 function normalizeProduct(documentSnapshot) {
   const data = documentSnapshot.data() || {};
@@ -39,12 +80,10 @@ function normalizeProduct(documentSnapshot) {
 }
 
 export async function getProducts() {
-  console.log('Fetching products from Firestore...');
+  ensureFirestoreReady();
 
   const snapshot = await getDocs(collection(db, 'products'));
   const products = snapshot.docs.map(normalizeProduct);
-
-  console.log('PRODUCTS:', products);
 
   return products;
 }
@@ -55,7 +94,7 @@ export async function getFeaturedProducts(limitCount = 3) {
 }
 
 export async function getProductById(productId) {
-  console.log('Fetching product details for:', productId);
+  ensureFirestoreReady();
 
   const snapshot = await getDoc(doc(db, 'products', productId));
 
@@ -67,6 +106,8 @@ export async function getProductById(productId) {
 }
 
 export async function createProduct(product) {
+  ensureFirestoreReady();
+
   const payload = {
     name: product.name,
     price: Number(product.price),
