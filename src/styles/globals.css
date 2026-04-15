@@ -846,6 +846,55 @@ p {
   text-transform: uppercase;
 }
 
+/* Badge variants */
+.car-card__badge--luxury {
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.22), rgba(245, 217, 122, 0.1));
+  border-color: rgba(212, 175, 55, 0.5);
+  color: #f5d97a;
+}
+
+.car-card__badge--popular {
+  background: rgba(99, 102, 241, 0.18);
+  border-color: rgba(99, 102, 241, 0.42);
+  color: #a5b4fc;
+}
+
+.car-card__badge--bestprice {
+  background: rgba(16, 185, 129, 0.15);
+  border-color: rgba(16, 185, 129, 0.38);
+  color: #6ee7b7;
+}
+
+/* Stats row */
+.car-card__stats {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.car-card__stat {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.55);
+  letter-spacing: 0.01em;
+}
+
+.car-card__stat-icon {
+  color: rgba(255, 255, 255, 0.35);
+  flex-shrink: 0;
+}
+
+.car-card__stat-icon--star {
+  color: #f5d97a;
+}
+
 .car-card__meta {
   display: grid;
   gap: 10px;

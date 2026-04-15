@@ -86,7 +86,7 @@ function Features() {
       <div className="mx-auto max-w-7xl rounded-[32px] border border-[#2A2A2A] bg-[#0B0B0B]/80 px-6 py-10 backdrop-blur-xl sm:px-8 lg:px-10 lg:py-12">
         <motion.div variants={itemVariants} className="max-w-3xl">
           <p className="text-sm font-semibold uppercase tracking-[0.28em] text-[#F5D97A]">
-            WHY BIZZINE CARS
+            WHY GIMELLI CARS
           </p>
           <h2 className="mt-4 text-4xl font-bold tracking-tight text-white sm:text-5xl">
             Modern rental features designed to feel premium at every step.
