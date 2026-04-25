@@ -16,7 +16,8 @@ const PRICE_RANGES = [
 ];
 
 function formatPrice(price) {
-  return new Intl.NumberFormat('fr-MA').format(Number(price || 0));
+  const amount = Number(price);
+  return Number.isFinite(amount) ? amount : 0;
 }
 
 function normalizeBrand(data) {

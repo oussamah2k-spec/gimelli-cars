@@ -2,11 +2,8 @@ import React from 'react';
 import { Pencil, Trash2 } from 'lucide-react';
 
 function formatMoney(value) {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    maximumFractionDigits: 0,
-  }).format(Number(value || 0));
+  const amount = Number(value);
+  return `${Number.isFinite(amount) ? amount : 0} DH`;
 }
 
 function getStockClass(stock) {

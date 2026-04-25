@@ -4,6 +4,11 @@ import { getProductById } from '../firebase/firebase';
 import LoadingState from '../components/LoadingState';
 import EmptyState from '../components/EmptyState';
 
+function formatPrice(price) {
+  const amount = Number(price);
+  return Number.isFinite(amount) ? amount : 0;
+}
+
 function ProductDetailsPage() {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
@@ -52,7 +57,7 @@ function ProductDetailsPage() {
         <div className="product-details__content">
           <p className="section__eyebrow">Car details</p>
           <h1>{product.name}</h1>
-          <p className="product-details__price">{product.price.toLocaleString()} DH</p>
+          <p className="product-details__price">{formatPrice(product.price)} DH</p>
           <p className="product-details__description">{product.description}</p>
 
           <div className="product-details__actions">
